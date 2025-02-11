@@ -45,6 +45,7 @@ void valid_moves(char chess_board[8][8], char player) {
                     basic_movement(chess_board, i + 1, j - 1, player);
                     basic_movement(chess_board, i - 1, j + 1, player);
                     basic_movement(chess_board, i - 1, j - 1, player);
+                    break;
             }
         }
     }
@@ -52,8 +53,7 @@ void valid_moves(char chess_board[8][8], char player) {
 
 
 void pawn_movement(char chess_board[8][8], int i, int j, char player) {
-    int n1, n2; 
-    int special_row;
+    int n1, n2, special_row;
     if (player == 'b') {
         n1 = 1;
         n2 = 2;
