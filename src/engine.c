@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "movement.h"
+
 
 int main(int argc, char *argv[]) {
 
     int timeout = atoi(argv[3]);
-    printf("timeout: %d sec\n\n", timeout);
+    printf("\ntimeout: %d sec\n\n", timeout);
 
     if (argc != 4) {
         fprintf(stderr, "Usage: %s <FEN> <possible_moves> <time_limit>\n", argv[0]);
@@ -123,6 +125,8 @@ int main(int argc, char *argv[]) {
         printf("%s\n", move);
         move = strtok(NULL, " ");
     }
+
+    valid_moves(chess_board, player);
 
     return 0;
 }

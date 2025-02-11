@@ -5,7 +5,8 @@ SRCDIR = src
 ## List all files you want to be part of your engine below
 ## (Okay to add more files)
 SOURCES = \
-  $(SRCDIR)/engine.c
+  $(SRCDIR)/engine.c \
+  $(SRCDIR)/movement.c
 
 ## You SHOULD NOT modify the parameters below
 
