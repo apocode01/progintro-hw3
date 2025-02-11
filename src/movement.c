@@ -17,14 +17,14 @@ void valid_moves(char chess_board[8][8], char player) {
                     break;
                 case 'N':
                 case 'n':
-                    basic_movement(chess_board, i - 1, j - 2, player);
-                    basic_movement(chess_board, i - 1, j + 2, player);
-                    basic_movement(chess_board, i - 2, j - 1, player);
-                    basic_movement(chess_board, i - 2, j + 1, player);
-                    basic_movement(chess_board, i + 1, j - 2, player);
-                    basic_movement(chess_board, i + 1, j + 2, player);
-                    basic_movement(chess_board, i + 2, j - 1, player);
-                    basic_movement(chess_board, i + 2, j + 1, player);
+                    basic_movement(chess_board, i, j, i - 1, j - 2, player);
+                    basic_movement(chess_board, i, j, i - 1, j + 2, player);
+                    basic_movement(chess_board, i, j, i - 2, j - 1, player);
+                    basic_movement(chess_board, i, j, i - 2, j + 1, player);
+                    basic_movement(chess_board, i, j, i + 1, j - 2, player);
+                    basic_movement(chess_board, i, j, i + 1, j + 2, player);
+                    basic_movement(chess_board, i, j, i + 2, j - 1, player);
+                    basic_movement(chess_board, i, j, i + 2, j + 1, player);
                     break;
                 case 'B':
                 case 'b':
@@ -37,14 +37,14 @@ void valid_moves(char chess_board[8][8], char player) {
                     break;
                 case 'K':
                 case 'k':
-                    basic_movement(chess_board, i - 1, j, player);
-                    basic_movement(chess_board, i + 1, j, player);
-                    basic_movement(chess_board, i, j - 1, player);
-                    basic_movement(chess_board, i, j + 1, player);
-                    basic_movement(chess_board, i + 1, j + 1, player);
-                    basic_movement(chess_board, i + 1, j - 1, player);
-                    basic_movement(chess_board, i - 1, j + 1, player);
-                    basic_movement(chess_board, i - 1, j - 1, player);
+                    basic_movement(chess_board, i, j, i - 1, j, player);
+                    basic_movement(chess_board, i, j, i + 1, j, player);
+                    basic_movement(chess_board, i, j, i, j - 1, player);
+                    basic_movement(chess_board, i, j, i, j + 1, player);
+                    basic_movement(chess_board, i, j, i + 1, j + 1, player);
+                    basic_movement(chess_board, i, j, i + 1, j - 1, player);
+                    basic_movement(chess_board, i, j, i - 1, j + 1, player);
+                    basic_movement(chess_board, i, j, i - 1, j - 1, player);
                     break;
             }
         }
@@ -67,32 +67,32 @@ void pawn_movement(char chess_board[8][8], int i, int j, char player) {
 
     // Single-step forward
     if (0 <= i + n1 && i + n1 <= 7 && chess_board[i + n1][j] == '0')
-        printf("%d-%d\n", i + n1, j);
+    make_move(chess_board, i, j, i + n1, j);
     // Two-step forward from special row
     if (0 <= i + n2 && i + n2 <= 7 && i == special_row && chess_board[i + n1][j] == '0' && chess_board[i + n2][j] == '0')
-        printf("%d-%d\n", i + n2, j);
+    make_move(chess_board, i, j, i + n2, j);
     // Diagonal left capture
     if (0 <= i + n1 && i + n1 <= 7 && 0 <= j - n1 && j - n1 <= 7 && is_enemy(chess_board, i + n1, j - n1, player))
-        printf("%d-%d\n", i + n1, j - n1);
+        make_move(chess_board, i, j, i + n1, j - n1);
     // Diagonal right capture
     if (0 <= i + n1 && i + n1 <= 7 && 0 <= j + n1 && j + n1 <= 7 && is_enemy(chess_board, i + n1, j + n1, player))
-        printf("%d-%d\n", i + n1, j + n1);
+        make_move(chess_board, i, j, i + n1, j + n1);
 }
 
 
-int basic_movement(char chess_board[8][8], int i, int j, char player) {
+int basic_movement(char chess_board[8][8], int prev_i, int prev_j, int i, int j, char player) {
     // Ensure that position is within bounds
     if (i < 0 || i >= 8 || j < 0 || j >= 8) return 0;
 
     // If the square is empty, allow movement
     if (chess_board[i][j] == '0') {
-        printf("%d-%d\n", i, j);
+        make_move(chess_board, prev_i, prev_j, i, j);
         return 1;
     }
 
     // If the square has an opponent piece, allow capture and stop further movement
     if (is_enemy(chess_board, i, j, player)) {
-        printf("%d-%d\n", i, j);
+        make_move(chess_board, prev_i, prev_j, i, j);
         return 0;
     }
 
@@ -104,26 +104,26 @@ int basic_movement(char chess_board[8][8], int i, int j, char player) {
 void rook_movement(char chess_board[8][8], int i, int j, char player) {
     int a;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i - a, j, player)) break;
+        if (! basic_movement(chess_board, i, j, i - a, j, player)) break;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i + a, j, player)) break;
+        if (! basic_movement(chess_board, i, j, i + a, j, player)) break;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i, j - a, player)) break;
+        if (! basic_movement(chess_board, i, j, i, j - a, player)) break;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i, j + a, player)) break;
+        if (! basic_movement(chess_board, i, j, i, j + a, player)) break;
 }
 
 
 void bishop_movement(char chess_board[8][8], int i, int j, char player) {
     int a;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i + a, j + a, player)) break;
+        if (! basic_movement(chess_board, i, j, i + a, j + a, player)) break;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i + a, j - a, player)) break;
+        if (! basic_movement(chess_board, i, j, i + a, j - a, player)) break;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i - a, j + a, player)) break;
+        if (! basic_movement(chess_board, i, j, i - a, j + a, player)) break;
     for (a = 1; a < 8; a++)
-        if (! basic_movement(chess_board, i - a, j - a, player)) break;
+        if (! basic_movement(chess_board, i, j, i - a, j - a, player)) break;
 }
 
 
@@ -133,4 +133,23 @@ int is_enemy(char chess_board[8][8], int i, int j, char player) {
     int flag3 = chess_board[i][j] >= 'a' && chess_board[i][j] <= 'z' && player == 'w';
 
     return flag1 && (flag2 || flag3);
+}
+
+
+void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j) {
+    char current = chess_board[i][j];
+    chess_board[i][j] = chess_board[prev_i][prev_j];
+    char prev = chess_board[prev_i][prev_j];
+    chess_board[prev_i][prev_j] = '0';
+
+    printf("\n");
+    for (int a = 0; a < 8; a++) {
+        for (int b = 0; b < 8; b++) {
+            printf("%c\t", chess_board[a][b]);
+        }
+        printf("\n");
+    }
+
+    chess_board[prev_i][prev_j] = prev;
+    chess_board[i][j] = current;
 }
