@@ -6,13 +6,13 @@
 
 int main(int argc, char *argv[]) {
 
-    int timeout = atoi(argv[3]);
-    printf("\ntimeout: %d sec\n\n", timeout);
-
     if (argc != 4) {
         fprintf(stderr, "Usage: %s <FEN> <possible_moves> <time_limit>\n", argv[0]);
         return 1;
     }
+
+    int timeout = atoi(argv[3]);
+    printf("\ntimeout: %d sec\n\n", timeout);
 
     int i, j;
 
