@@ -6,7 +6,8 @@ SRCDIR = src
 ## (Okay to add more files)
 SOURCES = \
   $(SRCDIR)/engine.c \
-  $(SRCDIR)/movement.c
+  $(SRCDIR)/movement.c \
+  $(SRCDIR)/score.c
 
 ## You SHOULD NOT modify the parameters below
 
