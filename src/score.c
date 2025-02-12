@@ -17,21 +17,21 @@ int evaluate(char chess_board[8][8], char player) {
                     black_value -= 1;
                     break;
                 case 'R':
-                    while_value += 5;
+                    white_value += 5;
                     break;
                 case 'r':
                     black_value -= 5;
                     break;
                 case 'N':
                 case 'B':
-                    while_value += 3;
+                    white_value += 3;
                     break;
                 case 'n':
                 case 'b':
                     black_value -= 3;
                     break;
                 case 'Q':
-                    while_value += 9;
+                    white_value += 9;
                     break;
                 case 'q':
                     black_value -= 3;
@@ -39,7 +39,7 @@ int evaluate(char chess_board[8][8], char player) {
             }
         }
     }
-    int evaluation = while_value - black_value;
+    int evaluation = white_value - black_value;
     int perspective = (player == 'w') ? 1 : -1;
     return evaluation * perspective;
 }
