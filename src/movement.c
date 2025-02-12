@@ -8,8 +8,11 @@ extern int en_passant_col;
 extern int max;
 extern int max_i;
 extern int max_j;
+extern int check;
+
 
 void valid_moves(char chess_board[8][8], char player) {
+    check = 0;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             if (is_enemy(chess_board, i, j, player)) continue;
@@ -160,6 +163,9 @@ void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, cha
     en_passant_col = -1;
 
     char current = chess_board[i][j];
+    if (current == 'k' || current == 'K') {
+        check = 1;
+    }
     chess_board[i][j] = chess_board[prev_i][prev_j];
     char prev = chess_board[prev_i][prev_j];
     chess_board[prev_i][prev_j] = '0'; 
@@ -181,4 +187,15 @@ void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, cha
     if (en_passant) {
         chess_board[prev_i][j] = prev2; 
     }
+}
+
+int in_check(char chess_board[8][8], char player) {
+    if (player == 'w') {
+        valid_moves(chess_board, 'b');
+    }
+    else if (player == 'b') {
+        valid_moves(chess_board, 'w');
+    }
+    if (check == 1) return 1;
+    return 0;
 }

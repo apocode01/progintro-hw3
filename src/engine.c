@@ -11,6 +11,8 @@ int max = -9999;
 int max_i = -1;
 int max_j = -1;
 
+int check;
+
 int main(int argc, char *argv[]) {
 
     if (argc != 4) {
@@ -134,6 +136,8 @@ int main(int argc, char *argv[]) {
     }
 
     valid_moves(chess_board, player);
+    if (in_check(chess_board, player)) printf("check\n");
+    else printf("no check\n");
     //printf("Best move: (%d)-(%d)\n", max_i, max_j);
 
     return 0;
