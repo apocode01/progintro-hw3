@@ -4,6 +4,13 @@
 #include "movement.h"
 
 
+int en_passant_row = -1;
+int en_passant_col = -1;
+
+int max = -9999;
+int max_i = -1;
+int max_j = -1;
+
 int main(int argc, char *argv[]) {
 
     if (argc != 4) {
@@ -127,6 +134,7 @@ int main(int argc, char *argv[]) {
     }
 
     valid_moves(chess_board, player);
+    //printf("Best move: (%d)-(%d)\n", max_i, max_j);
 
     return 0;
 }

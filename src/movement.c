@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include "movement.h"
+#include "score.h"
 
+
+extern int en_passant_row;
+extern int en_passant_col;
+extern int max;
+extern int max_i;
+extern int max_j;
 
 void valid_moves(char chess_board[8][8], char player) {
     for (int i = 0; i < 8; i++) {
@@ -67,16 +74,27 @@ void pawn_movement(char chess_board[8][8], int i, int j, char player) {
 
     // Single-step forward
     if (0 <= i + n1 && i + n1 <= 7 && chess_board[i + n1][j] == '0')
-    make_move(chess_board, i, j, i + n1, j);
+        make_move(chess_board, i, j, i + n1, j, player, 0);
     // Two-step forward from special row
-    if (0 <= i + n2 && i + n2 <= 7 && i == special_row && chess_board[i + n1][j] == '0' && chess_board[i + n2][j] == '0')
-    make_move(chess_board, i, j, i + n2, j);
+    if (0 <= i + n2 && i + n2 <= 7 && i == special_row && chess_board[i + n1][j] == '0' && chess_board[i + n2][j] == '0') {
+        make_move(chess_board, i, j, i + n2, j, player, 0);
+        en_passant_row = i + n1;
+        en_passant_col = j;
+    }
     // Diagonal left capture
     if (0 <= i + n1 && i + n1 <= 7 && 0 <= j - n1 && j - n1 <= 7 && is_enemy(chess_board, i + n1, j - n1, player))
-        make_move(chess_board, i, j, i + n1, j - n1);
+        make_move(chess_board, i, j, i + n1, j - n1, player, 0);
     // Diagonal right capture
     if (0 <= i + n1 && i + n1 <= 7 && 0 <= j + n1 && j + n1 <= 7 && is_enemy(chess_board, i + n1, j + n1, player))
-        make_move(chess_board, i, j, i + n1, j + n1);
+        make_move(chess_board, i, j, i + n1, j + n1, player, 0);
+    // En passant left capture
+    if (0 <= i + n1 && i + n1 <= 7 && 0 <= j - n1 && j - n1 <= 7 && j - n1 == en_passant_col && i + n1 == en_passant_row) {
+        make_move(chess_board, i, j, i + n1, j - n1, player, 1);
+    }
+    // En passant right capture
+    if (0 <= i + n1 && i + n1 <= 7 && 0 <= j + n1 && j + n1 <= 7 && j + n1 == en_passant_col && i + n1 == en_passant_row) {
+        make_move(chess_board, i, j, i + n1, j + n1, player, 1);
+    }
 }
 
 
@@ -86,13 +104,13 @@ int basic_movement(char chess_board[8][8], int prev_i, int prev_j, int i, int j,
 
     // If the square is empty, allow movement
     if (chess_board[i][j] == '0') {
-        make_move(chess_board, prev_i, prev_j, i, j);
+        make_move(chess_board, prev_i, prev_j, i, j, player, 0);
         return 1;
     }
 
     // If the square has an opponent piece, allow capture and stop further movement
     if (is_enemy(chess_board, i, j, player)) {
-        make_move(chess_board, prev_i, prev_j, i, j);
+        make_move(chess_board, prev_i, prev_j, i, j, player, 0);
         return 0;
     }
 
@@ -136,20 +154,31 @@ int is_enemy(char chess_board[8][8], int i, int j, char player) {
 }
 
 
-void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j) {
+void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, char player, int en_passant) {
+    // Clear the en passant target after every move
+    en_passant_row = -1;
+    en_passant_col = -1;
+
     char current = chess_board[i][j];
     chess_board[i][j] = chess_board[prev_i][prev_j];
     char prev = chess_board[prev_i][prev_j];
-    chess_board[prev_i][prev_j] = '0';
+    chess_board[prev_i][prev_j] = '0'; 
+    char prev2;
+    if (en_passant) {
+        prev2 = chess_board[prev_i][j];
+        chess_board[prev_i][j] = '0'; 
+    }
 
-    printf("\n");
-    for (int a = 0; a < 8; a++) {
-        for (int b = 0; b < 8; b++) {
-            printf("%c\t", chess_board[a][b]);
-        }
-        printf("\n");
+    int value = evaluate(chess_board, player);
+    if (value > max) {
+        max = value;
+        max_i = i;
+        max_j = j;
     }
 
     chess_board[prev_i][prev_j] = prev;
     chess_board[i][j] = current;
+    if (en_passant) {
+        chess_board[prev_i][j] = prev2; 
+    }
 }
