@@ -12,6 +12,7 @@ int max_i = -1;
 int max_j = -1;
 
 int check;
+int count;
 
 int main(int argc, char *argv[]) {
 
@@ -135,9 +136,8 @@ int main(int argc, char *argv[]) {
         move = strtok(NULL, " ");
     }
 
-    valid_moves(chess_board, player);
-    if (in_check(chess_board, player)) printf("check\n");
-    else printf("no check\n");
+    valid_moves(chess_board, player, 0);
+    printf("Count: %d\n", count);
     //printf("Best move: (%d)-(%d)\n", max_i, max_j);
 
     return 0;
