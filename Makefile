@@ -7,7 +7,7 @@ SRCDIR = src
 SOURCES = \
   $(SRCDIR)/engine.c \
   $(SRCDIR)/movement.c \
-  $(SRCDIR)/score.c
+  $(SRCDIR)/extra.c
 
 ## You SHOULD NOT modify the parameters below
 

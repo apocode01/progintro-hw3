@@ -2,32 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include "movement.h"
+#include "extra.h"
 
 
-int en_passant_row = -1;
-int en_passant_col = -1;
-
-int max = -9999;
-int max_i = -1;
-int max_j = -1;
+int max = -99999;
+char best_move[9];
 
 int check;
 int count;
 
-int main(int argc, char *argv[]) {
 
-    if (argc != 4) {
-        fprintf(stderr, "Usage: %s <FEN> <possible_moves> <time_limit>\n", argv[0]);
-        return 1;
-    }
-
-    int timeout = atoi(argv[3]);
-    printf("\ntimeout: %d sec\n\n", timeout);
-
-    int i, j;
+int choose_move(char *fen, char *moves) {
+    int i;
 
     char chess_board[8][8];
-    char *fen = argv[1];
     int row = 0;
     int column = 0;
 
@@ -40,14 +28,14 @@ int main(int argc, char *argv[]) {
         }
 
         if (row >= 8 || column >= 8) {
-            fprintf(stderr, "Invalid fen\n");
+            printf("Invalid fen\n");
             return 1;
         }
 
         if (*fen >= '0' && *fen <= '8') {
             for (i = column; i < column + (*fen - '0'); i++) {
                 if (i >= 8) {
-                    fprintf(stderr, "Invalid fen\n");
+                    printf("Invalid fen\n");
                     return 1;
                 }
                 chess_board[row][i] = '0';
@@ -62,21 +50,14 @@ int main(int argc, char *argv[]) {
         fen++;
     }
 
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
-            printf("%c\t", chess_board[i][j]);
-        }
-        printf("\n");
-    }
-
     while (*fen == ' ') fen++;
 
     char player = *fen;
-    printf("\nplayer: %c\n", player);
 
     fen++;
     while (*fen == ' ') fen++;
 
+    /*
     int white_castle_kingside = 0;
     int white_castle_queenside = 0;
     int black_castle_kingside = 0;
@@ -127,18 +108,37 @@ int main(int argc, char *argv[]) {
 
     int fullmoves = atoi(fen);
     printf("\nfullmoves: %d\n\n", fullmoves);
+    */
 
-    char *moves = argv[2];
+    valid_moves(chess_board, player, 0);
+    i = 0;
+
     char *move;
     move = strtok(moves, " ");   
     while(move != NULL) {
-        printf("%s\n", move);
+        if (strcmp(best_move, move) == 0) {
+            return i; 
+        }
+        i++;
         move = strtok(NULL, " ");
     }
 
-    valid_moves(chess_board, player, 0);
-    printf("Count: %d\n", count);
-    //printf("Best move: (%d)-(%d)\n", max_i, max_j);
+    printf("No best move found\n");
+    return 1;
+} 
 
+
+int main(int argc, char *argv[]) {
+
+    if (argc != 4) {
+        printf("Usage: %s <FEN> <possible_moves> <time_limit>\n", argv[0]);
+        return 1;
+    }
+
+    char *fen = argv[1];
+    char *moves = argv[2];
+    //int timeout = atoi(argv[3]);
+
+    printf("%d\n", choose_move(fen, moves));
     return 0;
 }

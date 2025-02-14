@@ -1,13 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "movement.h"
-#include "score.h"
+#include "extra.h"
 
 
-extern int en_passant_row;
-extern int en_passant_col;
 extern int max;
-extern int max_i;
-extern int max_j;
+extern char best_move[9];
 extern int check;
 extern int count;
 
@@ -81,27 +80,17 @@ void pawn_movement(char chess_board[8][8], int i, int j, char player, int only_c
 
     // Single-step forward
     if (0 <= i + n1 && i + n1 <= 7 && chess_board[i + n1][j] == '0')
-        make_move(chess_board, i, j, i + n1, j, player, 0, only_check);
+        make_move(chess_board, i, j, i + n1, j, player, only_check);
     // Two-step forward from special row
     if (0 <= i + n2 && i + n2 <= 7 && i == special_row && chess_board[i + n1][j] == '0' && chess_board[i + n2][j] == '0') {
-        make_move(chess_board, i, j, i + n2, j, player, 0, only_check);
-        en_passant_row = i + n1;
-        en_passant_col = j;
+        make_move(chess_board, i, j, i + n2, j, player, only_check);
     }
     // Diagonal left capture
     if (0 <= i + n1 && i + n1 <= 7 && 0 <= j - 1 && j - 1 <= 7 && is_enemy(chess_board, i + n1, j - 1, player))
-        make_move(chess_board, i, j, i + n1, j - 1, player, 0, only_check);
+        make_move(chess_board, i, j, i + n1, j - 1, player, only_check);
     // Diagonal right capture
     if (0 <= i + n1 && i + n1 <= 7 && 0 <= j + 1 && j + 1 <= 7 && is_enemy(chess_board, i + n1, j + 1, player))
-        make_move(chess_board, i, j, i + n1, j + 1, player, 0, only_check);
-    // En passant left capture
-    if (0 <= i + n1 && i + n1 <= 7 && 0 <= j - 1 && j - 1 <= 7 && j - 1 == en_passant_col && i + n1 == en_passant_row) {
-        make_move(chess_board, i, j, i + n1, j - 1, player, 1, only_check);
-    }
-    // En passant right capture
-    if (0 <= i + n1 && i + n1 <= 7 && 0 <= j + 1 && j + 1 <= 7 && j + 1 == en_passant_col && i + n1 == en_passant_row) {
-        make_move(chess_board, i, j, i + n1, j + 1, player, 1, only_check);
-    }
+        make_move(chess_board, i, j, i + n1, j + 1, player, only_check);
 }
 
 
@@ -111,13 +100,13 @@ int basic_movement(char chess_board[8][8], int prev_i, int prev_j, int i, int j,
 
     // If the square is empty, allow movement
     if (chess_board[i][j] == '0') {
-        make_move(chess_board, prev_i, prev_j, i, j, player, 0, only_check);
+        make_move(chess_board, prev_i, prev_j, i, j, player, only_check);
         return 1;
     }
 
     // If the square has an opponent piece, allow capture and stop further movement
     if (is_enemy(chess_board, i, j, player)) {
-        make_move(chess_board, prev_i, prev_j, i, j, player, 0, only_check);
+        make_move(chess_board, prev_i, prev_j, i, j, player, only_check);
         return 0;
     }
 
@@ -161,10 +150,7 @@ int is_enemy(char chess_board[8][8], int i, int j, char player) {
 }
 
 
-void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, char player, int en_passant, int only_check) {
-    // Clear the en passant target after every move
-    en_passant_row = -1;
-    en_passant_col = -1;
+void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, char player, int only_check) {
 
     if (only_check) {
         if (chess_board[i][j] == 'k' || chess_board[i][j] == 'K') {
@@ -173,32 +159,26 @@ void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, cha
         return;
     }
 
+    char *move = convert_to_algebraic(chess_board, prev_i, prev_j, i, j);
+
     char current = chess_board[i][j];
     chess_board[i][j] = chess_board[prev_i][prev_j];
     char prev = chess_board[prev_i][prev_j];
     chess_board[prev_i][prev_j] = '0'; 
-    char prev2;
-    if (en_passant) {
-        prev2 = chess_board[prev_i][j];
-        chess_board[prev_i][j] = '0'; 
-    }
 
-    int value;
     if (!in_check(chess_board, player)) {
-        value = evaluate(chess_board, player);
+        int value = evaluate(chess_board, player);
         if (value > max) {
             max = value;
-            max_i = i;
-            max_j = j;
-        }
+            strncpy(best_move, move, 8);
+        }  
         count++;
     }
 
+    free(move);
+
     chess_board[prev_i][prev_j] = prev;
     chess_board[i][j] = current;
-    if (en_passant) {
-        chess_board[prev_i][j] = prev2; 
-    }
 }
 
 int in_check(char chess_board[8][8], char player) {
