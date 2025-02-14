@@ -12,7 +12,7 @@ int check;
 int count;
 
 
-int choose_move(char *fen, char *moves) {
+int generate_index(char *fen, char *moves) {
     int i;
 
     char chess_board[8][8];
@@ -124,8 +124,12 @@ int choose_move(char *fen, char *moves) {
     }
 
     printf("No best move found\n");
-    return 1;
+    return -1;
 } 
+
+int choose_move(char *fen, char *moves) {
+    return generate_index(fen, moves);
+}
 
 
 int main(int argc, char *argv[]) {
@@ -139,6 +143,5 @@ int main(int argc, char *argv[]) {
     char *moves = argv[2];
     //int timeout = atoi(argv[3]);
 
-    printf("%d\n", choose_move(fen, moves));
-    return 0;
+    printf("%d\n", generate_index(fen, moves));
 }
