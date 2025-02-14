@@ -4,9 +4,6 @@
 #include "extra.h"
 
 
-extern int best_evaluation;
-extern int count;
-
 int pawntable[8][8] = {
     { 0,  0,  0,  0,  0,  0,  0,  0},
     { 5, 10, 10,-20,-20, 10, 10,  5},

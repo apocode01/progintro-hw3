@@ -5,17 +5,12 @@
 #include "extra.h"
 
 
-int max = -99999;
-char best_move[9];
-
-int check;
-int count;
-
-
 int generate_index(char *fen, char *moves) {
     int i;
 
     char chess_board[8][8];
+    char best_move[9];
+    int check = 0;
     int row = 0;
     int column = 0;
 
@@ -28,15 +23,13 @@ int generate_index(char *fen, char *moves) {
         }
 
         if (row >= 8 || column >= 8) {
-            printf("Invalid fen\n");
-            return 1;
+            return 0;
         }
-
+        
         if (*fen >= '0' && *fen <= '8') {
             for (i = column; i < column + (*fen - '0'); i++) {
                 if (i >= 8) {
-                    printf("Invalid fen\n");
-                    return 1;
+                    return 0;
                 }
                 chess_board[row][i] = '0';
             }
@@ -110,22 +103,21 @@ int generate_index(char *fen, char *moves) {
     printf("\nfullmoves: %d\n\n", fullmoves);
     */
 
-    valid_moves(chess_board, player, 0);
+    valid_moves(chess_board, player, 0, check, best_move);
     i = 0;
 
     char *move;
-    move = strtok(moves, " ");   
-    while(move != NULL) {
+    move = strtok(moves, " ");  
+    while (move != NULL) {
         if (strcmp(best_move, move) == 0) {
             return i; 
         }
         i++;
         move = strtok(NULL, " ");
     }
+    return 0;
+}
 
-    printf("No best move found\n");
-    return -1;
-} 
 
 int choose_move(char *fen, char *moves) {
     return generate_index(fen, moves);
@@ -144,4 +136,5 @@ int main(int argc, char *argv[]) {
     //int timeout = atoi(argv[3]);
 
     printf("%d\n", generate_index(fen, moves));
+    return 0;
 }
