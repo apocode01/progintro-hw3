@@ -118,38 +118,3 @@ int evaluate(char chess_board[8][8], char player) {
     int evaluation = white_value - black_value;
     return evaluation * perspective;
 }
-
-char *convert_to_algebraic(char chess_board[8][8], int prev_i, int prev_j, int i, int j) {
-    char *move = malloc(9 * sizeof(char));
-    if (!move) {
-        //printf("Failed to allocate memory!\n");
-        exit(1);
-    }
-    int k = 0;
-    switch (chess_board[prev_i][prev_j]) {
-        case 'R':
-        case 'r':
-            move[k++] = 'R';
-            break;
-        case 'N':
-        case 'n':
-            move[k++] = 'N';
-            break;
-        case 'B':
-        case 'b':
-            move[k++] = 'B';
-            break;
-        case 'Q':
-        case 'q':
-            move[k++] = 'Q';
-            break;
-        case 'K':
-        case 'k':
-            move[k++] = 'K';
-            break;
-    }
-    move[k++] = 'a' + j;
-    move[k++] = '0' + (8 - i);
-    move[k] = '\0';
-    return move;
-}

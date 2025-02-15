@@ -152,7 +152,38 @@ void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, cha
         return;
     }
 
-    char *move = convert_to_algebraic(chess_board, prev_i, prev_j, i, j);
+    char move[9];
+    int k = 0;
+    switch (chess_board[prev_i][prev_j]) {
+        case 'R':
+        case 'r':
+            move[k++] = 'R';
+            break;
+        case 'N':
+        case 'n':
+            move[k++] = 'N';
+            break;
+        case 'B':
+        case 'b':
+            move[k++] = 'B';
+            break;
+        case 'Q':
+        case 'q':
+            move[k++] = 'Q';
+            break;
+        case 'K':
+        case 'k':
+            move[k++] = 'K';
+            break;
+        case 'P':
+        case 'p':
+            if (chess_board[i][j] != '0') move[k++] = 'a' + prev_j;
+            break;
+    }
+    if (chess_board[i][j] != '0') move[k++] = 'x';
+    move[k++] = 'a' + j;
+    move[k++] = '0' + (8 - i);
+    move[k] = '\0';
 
     char current = chess_board[i][j];
     chess_board[i][j] = chess_board[prev_i][prev_j];
@@ -166,8 +197,6 @@ void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, cha
             strncpy(best_move, move, 8);
         }  
     }
-
-    free(move);
 
     chess_board[prev_i][prev_j] = prev;
     chess_board[i][j] = current;
