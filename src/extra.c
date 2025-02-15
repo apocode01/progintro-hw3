@@ -1,7 +1,4 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include "movement.h"
-#include "extra.h"
 
 
 int pawntable[8][8] = {
@@ -125,7 +122,7 @@ int evaluate(char chess_board[8][8], char player) {
 char *convert_to_algebraic(char chess_board[8][8], int prev_i, int prev_j, int i, int j) {
     char *move = malloc(9 * sizeof(char));
     if (!move) {
-        printf("Failed to allocate memory!\n");
+        //printf("Failed to allocate memory!\n");
         exit(1);
     }
     int k = 0;

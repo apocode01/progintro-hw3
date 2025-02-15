@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "movement.h"
-#include "extra.h"
 
 
 int generate_index(char *fen, char *moves) {
