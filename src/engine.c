@@ -1,15 +1,15 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "movement.h"
 
+int brow;
+char bcol;
 
 int generate_index(char *fen, char *moves) {
     int i;
 
     char chess_board[8][8];
     char best_move[9];
-    int check = 0;
     int row = 0;
     int column = 0;
 
@@ -102,14 +102,37 @@ int generate_index(char *fen, char *moves) {
     printf("\nfullmoves: %d\n\n", fullmoves);
     */
 
-    valid_moves(chess_board, player, 0, check, best_move);
+    valid_moves(chess_board, player, 0, best_move);
     i = 0;
 
+    char *checkmate = strchr(moves, '#');
+    if (checkmate) {
+        while (*(checkmate-1) != ' ') checkmate--;
+    }
+
+    char best_move_copy[9];
     char *move;
     move = strtok(moves, " ");  
     while (move != NULL) {
-        if (strcmp(best_move, move) == 0) {
+        if (checkmate) {
+            if (strcmp(checkmate, move) == 0) return i;
+        }
+        else if (strcmp(best_move, move) == 0) {
             return i; 
+        }
+        else {
+            strncpy(best_move_copy, best_move, 8);
+            int N = strlen(best_move);
+            best_move_copy[N] = ' ';
+            for (int j = N; j > 1; j--) {
+                best_move_copy[j] = best_move_copy[j-1];
+            }
+            best_move_copy[1] = brow;
+            if (strcmp(best_move_copy, move) == 0) return i;
+            else {
+                best_move_copy[1] = bcol;
+                if (strcmp(best_move_copy, move) == 0) return i;
+            }
         }
         i++;
         move = strtok(NULL, " ");
@@ -118,7 +141,8 @@ int generate_index(char *fen, char *moves) {
 }
 
 
-int choose_move(char *fen, char *moves) {
+int choose_move(char *fen, char *moves, int timeout) {
+    (void)timeout;
     return generate_index(fen, moves);
 }
 
