@@ -1,3 +1,5 @@
+// Positional evaluation tables for chess pieces that reflect standard principles
+// for piece positioning and are considered typical for most scenarios
 int pawntable[8][8] = {
     { 0,  0,  0,  0,  0,  0,  0,  0},
     { 5, 10, 10,-20,-20, 10, 10,  5},
@@ -64,8 +66,7 @@ int kingstable[8][8] = {
     {-30,-40,-40,-50,-50,-40,-40,-30}
 };
 
-
-
+// Function that evaluates the state of the current board
 int evaluate(char chess_board[8][8], char player) {
     int white_value = 0;
     int black_value = 0;
@@ -111,6 +112,7 @@ int evaluate(char chess_board[8][8], char player) {
             }
         }
     }
+    // Calculate the evaluation based on whose playing
     int perspective = (player == 'w') ? 1 : -1;
     int evaluation = white_value - black_value;
     return evaluation * perspective;

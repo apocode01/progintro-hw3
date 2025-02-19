@@ -2,22 +2,27 @@
 #include "movement.h"
 #include "extra.h"
 
-int count;
-int check;
-int max = -99999;
+int check;          // Tracks whether the king is in check (0 for not in check, 1 for in check)
+int max = -99999;   // Stores the calculated evaluation of the best move
 
+// Variables from "engine.c"
 extern int brow;
 extern int bcol;
 
+// Function that generates all possible moves
+// If only_check is 1, then its purpose is to find whether the king is in check
 void valid_moves(char chess_board[8][8], char player, int only_check, char best_move[9]) {
+
+    // Initialize variables depending on the purpose of the call
     if (only_check) check = 0;
-    else {
-        count = 0;
-        max = -99999;
-    }
+    else max = -99999;
+
+    // Go though the entire board
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
+            // Skip empty and enemy pieces
             if (is_enemy(chess_board, i, j, player)) continue;
+            // Generate moves depending on the piece selected
             switch (chess_board[i][j]) {
                 case 'P':
                 case 'p':
@@ -65,8 +70,11 @@ void valid_moves(char chess_board[8][8], char player, int only_check, char best_
 }
 
 
+// Function for generating possible moves for pawns
 void pawn_movement(char chess_board[8][8], int i, int j, char player, int only_check, char best_move[9]) {
-    int n1, n2, special_row;
+    int n1;             // 1 step forward (direction based on player)
+    int n2;             // 2 steps forward (direction based on player)
+    int special_row;    // Row which allows double movement
     if (player == 'b') {
         n1 = 1;
         n2 = 2;
@@ -94,6 +102,8 @@ void pawn_movement(char chess_board[8][8], int i, int j, char player, int only_c
 }
 
 
+// Function for enabling movement on the selected square
+// Returns 0 if movement should be stopped and 1 if movement can continue
 int basic_movement(char chess_board[8][8], int prev_i, int prev_j, int i, int j, char player, int only_check, char best_move[9]) {
     // Ensure that position is within bounds
     if (i < 0 || i >= 8 || j < 0 || j >= 8) return 0;
@@ -115,6 +125,7 @@ int basic_movement(char chess_board[8][8], int prev_i, int prev_j, int i, int j,
 }
 
 
+// Function for generating possible moves for rooks
 void rook_movement(char chess_board[8][8], int i, int j, char player, int only_check, char best_move[9]) {
     int a;
     for (a = 1; a < 8; a++)
@@ -128,6 +139,7 @@ void rook_movement(char chess_board[8][8], int i, int j, char player, int only_c
 }
 
 
+// Function for generating possible moves for bishops
 void bishop_movement(char chess_board[8][8], int i, int j, char player, int only_check, char best_move[9]) {
     int a;
     for (a = 1; a < 8; a++)
@@ -141,6 +153,7 @@ void bishop_movement(char chess_board[8][8], int i, int j, char player, int only
 }
 
 
+// Function that returns 1 if the selected square is empty or occupied by the enemy player
 int is_enemy(char chess_board[8][8], int i, int j, char player) {
     int flag1 = chess_board[i][j] != '0';
     int flag2 = chess_board[i][j] >= 'A' && chess_board[i][j] <= 'Z' && player == 'b';
@@ -150,8 +163,10 @@ int is_enemy(char chess_board[8][8], int i, int j, char player) {
 }
 
 
+// Executes a move, processes the updated chess board state, and then reverts the move
 void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, char player, int only_check, char best_move[9]) {
 
+    // If function is called with only_check == 1 and a king is captured, update check to 1
     if (only_check) {
         if (chess_board[i][j] == 'k' || chess_board[i][j] == 'K') {
             check = 1;
@@ -159,9 +174,10 @@ void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, cha
         return;
     }
 
-    char move[9];
-    char opponent = (player == 'w') ? 'b' : 'w';
+    char move[9];   // Current move in algebraic notation format
     int k = 0;
+
+    // Convert move to the algebraic notation format      
     switch (chess_board[prev_i][prev_j]) {
         case 'R':
         case 'r':
@@ -191,41 +207,49 @@ void make_move(char chess_board[8][8], int prev_i, int prev_j, int i, int j, cha
     if (chess_board[i][j] != '0') move[k++] = 'x';
     move[k++] = 'a' + j;
     move[k++] = '0' + (8 - i);
+
+    // Update variables in case of disambiguating moves
     brow = 'a' + prev_j;
     bcol = '0' + (8 - prev_i);
 
+    // Make the move
     char current = chess_board[i][j];
     chess_board[i][j] = chess_board[prev_i][prev_j];
     char prev = chess_board[prev_i][prev_j];
     chess_board[prev_i][prev_j] = '0'; 
 
+    // Algebraic notation for pawn promotion
     if ((chess_board[i][j] == 'p' || chess_board[i][j] == 'P') && (i == 0 || i == 7)) {
         move[k++] = '=';
         move[k++] = 'Q';
     }
+
+    // Algebraic notation for moves resulting to check of the opponent's king
+    char opponent = (player == 'w') ? 'b' : 'w';
     if (in_check(chess_board, opponent, best_move)) move[k++] = '+'; 
     move[k] = '\0';
 
+    // If the move is valid (doesn't result to check for the current player's king),
+    // find its evaluation and check if it is larger than previous moves
     if (!in_check(chess_board, player, best_move)) {
         int value = evaluate(chess_board, player);
         if (value > max) {
             max = value;
-            strncpy(best_move, move, 8);
+            strncpy(best_move, move, 8); // Update best_move
         }
-        count++;
     }
 
+    // Undo the move
     chess_board[prev_i][prev_j] = prev;
     chess_board[i][j] = current;
 }
 
+
+// Function that checks if a move results to a check
 int in_check(char chess_board[8][8], char player, char best_move[9]) {
-    if (player == 'w') {
-        valid_moves(chess_board, 'b', 1, best_move);
-    }
-    else if (player == 'b') {
-        valid_moves(chess_board, 'w', 1, best_move);
-    }
+    char opponent = (player == 'w') ? 'b' : 'w';
+    // Re-call valid_moves but only for check purposes
+    valid_moves(chess_board, opponent, 1, best_move);
     if (check == 1) return 1;
     return 0;
 }
