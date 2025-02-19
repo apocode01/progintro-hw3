@@ -103,7 +103,7 @@ void pawn_movement(char chess_board[8][8], int i, int j, char player, int only_c
 
 
 // Function for enabling movement on the selected square
-// Returns 0 if movement should be stopped and 1 if movement can continue
+// Returns 0 if movement should be stopped or 1 if movement can continue
 int basic_movement(char chess_board[8][8], int prev_i, int prev_j, int i, int j, char player, int only_check, char best_move[9]) {
     // Ensure that position is within bounds
     if (i < 0 || i >= 8 || j < 0 || j >= 8) return 0;
