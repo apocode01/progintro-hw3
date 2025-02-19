@@ -41,7 +41,7 @@ Serving HTTP on 0.0.0.0 port 8000 (http://localhost:8000/) ...
 
 You should now be able to interact with your engine on http://localhost:8000/.
 
-[Engine Screenshot](web/img/screenshot.png)
+![Engine Screenshot](web/img/screenshot.png)
 
 ## Usage (via command line)
 
