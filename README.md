@@ -83,7 +83,7 @@ $ ./engine "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" \ "a3 a4 b
     e) `strncpy()`: Copies a specified number of characters from one string to another.
 
 ### engine.c
-Includes the program's basic functions and declares the `int brow` and `char bcol global` variables to control disambiguating moves when converting to the algebraic notation format.
+Includes the program's basic functions and declares the `int brow` and `char bcol` global variables to control disambiguating moves when converting to the algebraic notation format.
 
 - **main**
      
@@ -233,7 +233,7 @@ Includes functions that control the movement of the chess pieces. It also declar
     ```c
     void pawn_movement(char chess_board[8][8], int i, int j, char player, int only_check, char best_move[9])
     ```
-    and generates all possible for pawns.
+    and generates all possible moves for pawns.
     
     1. Firstly, we declare and initialize some variables depending on whose playing.
         ```c
@@ -378,7 +378,7 @@ Includes functions that control the movement of the chess pieces. It also declar
 
     1. If function is called with `only_check == 1` and a king is captured, update check to 1.
     2. Declare `char move[9]` that stores the current move in algebraic notation format and initialize `int k = 0`
-    3. Begin the conversion to algebraic notation by firstly detecting the piece being moved (for pawns we want the file from which the pawn departed)
+    3. Begin the conversion to algebraic notation by firstly detecting the piece being moved (for captures by pawns we want the file from which the pawn departed)
         ```c
         switch (chess_board[prev_i][prev_j]) {
         case 'R':
@@ -431,7 +431,7 @@ Includes functions that control the movement of the chess pieces. It also declar
             move[k++] = 'Q';
         }
         ```
-    8. Add a '+' for moves resulting to check of the opponent's king
+    8. Add a '+' for moves resulting to a check of the opponent's king
         ```c
         char opponent = (player == 'w') ? 'b' : 'w';
         if (in_check(chess_board, opponent, best_move)) move[k++] = '+'; 
@@ -440,13 +440,13 @@ Includes functions that control the movement of the chess pieces. It also declar
         ```c
         move[k] = '\0';
         ```
-    10. If the move is valid (doesn't result to check for the current player's king), find its evaluation and check if it is larger than previous moves. If so, update best_move.
+    10. If the move is valid (doesn't result to a check for the current player's king), find its evaluation and check if it is larger than previous moves. If so, update best_move.
         ```c
         if (!in_check(chess_board, player, best_move)) {
             int value = evaluate(chess_board, player);
             if (value > max) {
                 max = value;
-                strncpy(best_move, move, 8); // Update best_move
+                strncpy(best_move, move, 8);
             }
         }
         ```
@@ -462,7 +462,7 @@ Includes functions that control the movement of the chess pieces. It also declar
     ```c
     int in_check(char chess_board[8][8], char player, char best_move[9])
     ```
-    and checks if a move results to a check by re-calling valid_moves but only for check purposes.
+    and checks if a move results to a check by re-calling `valid_moves`, but only for check purposes.
     ```c
     char opponent = (player == 'w') ? 'b' : 'w';
     valid_moves(chess_board, opponent, 1, best_move);
@@ -471,7 +471,7 @@ Includes functions that control the movement of the chess pieces. It also declar
     ```
 
 ### extra.c
-Initializes positional evaluation tables for chess pieces that reflect standard principles for piece positioning and are considered typical for most scenarios and includes the `evaluate` function.
+Initializes positional evaluation tables for chess pieces that reflect standard principles for piece positioning and are considered typical for most scenarios. It also includes the `evaluate` function.
 
 - **evalute**
 
@@ -481,9 +481,9 @@ Initializes positional evaluation tables for chess pieces that reflect standard 
     ```
     and evaluates the state of the current board.
 
-    In summary, the function calculates scores for both white and black by considering piece values and positional evaluation tables, and then adjusts the final score based on the current player's perspective (subtracting black's score from white's and flipping the sign if black is playing).
+    In summary, the function calculates scores for both white and black by considering piece values and the positional evaluation tables, and then adjusts the final score based on the current player's perspective (subtracting black's score from white's and flipping the sign if black is playing).
 
-## References
+## Sources
 
 - Algebraic notation (chess): https://en.wikipedia.org/wiki/Algebraic_notation_(chess)
 - Forsyth–Edwards Notation: https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
