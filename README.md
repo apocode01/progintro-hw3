@@ -1,4 +1,10 @@
-# Chess Engine
+# progintro-hw3
+
+This is a solution for the fourth homework assignment in UoA's 'Introduction to Programming' course, Fall 2024. 
+
+The PDF describing the assignment can be found [here](./hw3.pdf) (written in Greek)
+
+## Chess Engine
 
 Artificial Intelligence (AI) is advancing rapidly in today’s world and manages to complete a wide spectrum of tasks. For example, AI has managed to 'solve' games like Checkers and is able to win against every opponent. However, while there are plenty of strong AI chess engines available, it is still far from 'solving' chess due to the game's immense complexity.
 
